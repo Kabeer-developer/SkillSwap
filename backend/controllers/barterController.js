@@ -25,9 +25,52 @@ exports.updateBarterStatus = async (req, res) => {
   try {
     const barter = await BarterRequest.findById(req.params.id);
 
-    if (!barter) return res.status(404).json({ message: "Barter not found" });
+    if (!barter)
+      return res.status(404).json({ message: "Barter not found" });
 
-    barter.status = req.body.status;
+    const userId = req.user.id;
+
+    // Only sender or receiver can access
+    if (
+      barter.senderId.toString() !== userId &&
+      barter.receiverId.toString() !== userId
+    ) {
+      return res.status(403).json({ message: "Not authorized" });
+    }
+
+    const newStatus = req.body.status;
+
+    // Only receiver can Accept or Reject
+    if (
+      (newStatus === "Accepted" || newStatus === "Rejected") &&
+      barter.receiverId.toString() !== userId
+    ) {
+      return res.status(403).json({
+        message: "Only receiver can accept or reject the barter",
+      });
+    }
+
+    // Only participants can mark Completed
+    if (newStatus === "Completed") {
+      if (
+        barter.senderId.toString() !== userId &&
+        barter.receiverId.toString() !== userId
+      ) {
+        return res.status(403).json({
+          message: "Not allowed to complete this barter",
+        });
+      }
+
+      // 🔥 Auto Credit Adjustment (example: fixed 2 credits)
+      const creditCalculator = require("../utils/creditCalculator");
+      await creditCalculator(
+        barter.senderId,
+        barter.receiverId,
+        2
+      );
+    }
+
+    barter.status = newStatus;
     await barter.save();
 
     res.json(barter);

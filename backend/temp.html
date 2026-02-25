@@ -1,0 +1,24 @@
+user1 info 
+
+{"_id":"699eda3fe72288d520ee0094","name":"Kabeer","email":"kabeer@test.com","token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5OWVkYTNmZTcyMjg4ZDUyMGVlMDA5NCIsImlhdCI6MTc3MjAxODIzOSwiZXhwIjoxNzcyNjIzMDM5fQ.6AMpdF-J2K3hsQ2tt73nvU8kFDCvlXFHdwlwBWClqZQ"}
+
+user2
+{"_id":"699edb10e72288d520ee009d","name":"Rahul","email":"rahul@test.com","token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5OWVkYjEwZTcyMjg4ZDUyMGVlMDA5ZCIsImlhdCI6MTc3MjAxODQ0OCwiZXhwIjoxNzcyNjIzMjQ4fQ.mhYbMIFHILmir3qMwYgJoAHZq9qhUdZyanf5w4CNOV4"}
+
+skills user1
+{"title":"Guitar","category":"Music","level":"Expert","description":"I can teach acoustic guitar basics.","postedBy":"699eda3fe72288d520ee0094","_id":"699edabde72288d520ee0098","createdAt":"2026-02-25T11:19:25.631Z","updatedAt":"2026-02-25T11:19:25.631Z","__v":0}
+
+skill user2
+{"title":"bike","category":"driving","level":"Expert","description":"I can teach bike basics.","postedBy":"699edb10e72288d520ee009d","_id":"699edbf7e72288d520ee00a0","createdAt":"2026-02-25T11:24:39.149Z","updatedAt":"2026-02-25T11:24:39.149Z","__v":0}
+
+user2 to user1 to request sent 
+{"senderId":"699edb10e72288d520ee009d","receiverId":"699eda3fe72288d520ee0094","offeredSkill":"699edbf7e72288d520ee00a0","neededSkill":"699edabde72288d520ee0098","status":"Pending","_id":"699edd15e72288d520ee00a9","sessions":[],"createdAt":"2026-02-25T11:29:25.136Z","updatedAt":"2026-02-25T11:29:25.136Z","__v":0}
+
+request accepted 
+{"_id":"699edd15e72288d520ee00a9","senderId":"699edb10e72288d520ee009d","receiverId":"699eda3fe72288d520ee0094","offeredSkill":"699edbf7e72288d520ee00a0","neededSkill":"699edabde72288d520ee0098","status":"Accepted","sessions":[],"createdAt":"2026-02-25T11:29:25.136Z","updatedAt":"2026-02-25T11:34:03.366Z","__v":0}
+
+schedule sessions
+{"_id":"699edd15e72288d520ee00a9","senderId":"699edb10e72288d520ee009d","receiverId":"699eda3fe72288d520ee0094","offeredSkill":"699edbf7e72288d520ee00a0","neededSkill":"699edabde72288d520ee0098","status":"Accepted","sessions":[{"date":"2026-03-01","time":"6 PM","mode":"Online","_id":"699ede8ce72288d520ee00b6"}],"createdAt":"2026-02-25T11:29:25.136Z","updatedAt":"2026-02-25T11:35:40.096Z","__v":1}
+
+review 
+{"reviewerId":"699edb10e72288d520ee009d","revieweeId":"699edb10e72288d520ee009d","barterId":"699edd15e72288d520ee00a9","rating":5,"comment":"Very good session","_id":"699edf11e72288d520ee00b9","createdAt":"2026-02-25T11:37:53.039Z","updatedAt":"2026-02-25T11:37:53.039Z","__v":0}
