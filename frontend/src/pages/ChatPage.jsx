@@ -1,22 +1,44 @@
 import { useParams } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addMessage } from "../features/chat/chatSlice";
+import {
+  addMessage,
+  fetchMessages,
+  clearChat,
+} from "../features/chat/chatSlice";
 import useSocket from "../hooks/useSocket";
 
 function ChatPage() {
   const { id } = useParams();
   const dispatch = useDispatch();
+  const bottomRef = useRef(null);
+
   const { messages } = useSelector((state) => state.chat);
   const { user } = useSelector((state) => state.auth);
 
   const [text, setText] = useState("");
+
+  // Load old messages
+  useEffect(() => {
+    dispatch(fetchMessages(id));
+
+    return () => {
+      dispatch(clearChat());
+    };
+  }, [dispatch, id]);
+
+  // Auto scroll
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   const { sendMessage } = useSocket(id, (message) => {
     dispatch(addMessage(message));
   });
 
   const handleSend = () => {
+    if (!text.trim()) return;
+
     const messageData = {
       barterId: id,
       senderId: user._id,
@@ -32,13 +54,16 @@ function ChatPage() {
     <div className="p-6">
       <h2 className="text-xl font-bold mb-4">Chat</h2>
 
-      <div className="border h-64 overflow-y-scroll p-3 mb-3">
+      <div className="border h-80 overflow-y-scroll p-3 mb-3">
         {messages.map((msg, index) => (
-          <div key={index}>
-            <strong>{msg.senderId === user._id ? "Me" : "Other"}:</strong>{" "}
+          <div key={index} className="mb-2">
+            <strong>
+              {msg.senderId === user._id ? "Me" : "Other"}:
+            </strong>{" "}
             {msg.text}
           </div>
         ))}
+        <div ref={bottomRef}></div>
       </div>
 
       <div className="flex gap-2">

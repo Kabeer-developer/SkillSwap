@@ -1,10 +1,11 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
 import { registerUserAPI, loginUserAPI } from "./authAPI";
 
-// Get user from localStorage
+// Load from localStorage
 const userFromStorage = JSON.parse(localStorage.getItem("user"));
 
-// Register
+// ================= REGISTER =================
 export const register = createAsyncThunk(
   "auth/register",
   async (userData, thunkAPI) => {
@@ -20,7 +21,7 @@ export const register = createAsyncThunk(
   }
 );
 
-// Login
+// ================= LOGIN =================
 export const login = createAsyncThunk(
   "auth/login",
   async (userData, thunkAPI) => {
@@ -36,6 +37,32 @@ export const login = createAsyncThunk(
   }
 );
 
+// ================= FETCH PROFILE (🔥 NEW) =================
+export const fetchProfile = createAsyncThunk(
+  "auth/fetchProfile",
+  async (_, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().auth.user.token;
+
+      const res = await axios.get(
+        "http://localhost:5000/api/users/profile",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      return res.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Failed to fetch profile"
+      );
+    }
+  }
+);
+
+// ================= SLICE =================
 const authSlice = createSlice({
   name: "auth",
   initialState: {
@@ -54,6 +81,7 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      // REGISTER
       .addCase(register.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -66,6 +94,8 @@ const authSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
+
+      // LOGIN
       .addCase(login.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -77,6 +107,20 @@ const authSlice = createSlice({
       .addCase(login.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+
+      // 🔥 FETCH PROFILE
+      .addCase(fetchProfile.fulfilled, (state, action) => {
+        state.user = {
+          ...state.user,
+          ...action.payload,
+        };
+
+        // keep localStorage updated
+        localStorage.setItem(
+          "user",
+          JSON.stringify(state.user)
+        );
       });
   },
 });
