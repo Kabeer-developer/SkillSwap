@@ -61,7 +61,7 @@ exports.updateBarterStatus = async (req, res) => {
         });
       }
 
-      // 🔥 Auto Credit Adjustment (example: fixed 2 credits)
+      
       const creditCalculator = require("../utils/creditCalculator");
       await creditCalculator(
         barter.senderId,
@@ -78,7 +78,24 @@ exports.updateBarterStatus = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+exports.getBarters = async (req, res) => {
+  try {
+    const barters = await BarterRequest.find({
+      $or: [
+        { senderId: req.user.id },
+        { receiverId: req.user.id },
+      ],
+    })
+      .populate("offeredSkill")
+      .populate("neededSkill")
+      .populate("senderId", "name credits trustScore")
+      .populate("receiverId", "name credits trustScore");
 
+    res.json(barters);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 // Schedule session
 exports.scheduleSession = async (req, res) => {
   try {
