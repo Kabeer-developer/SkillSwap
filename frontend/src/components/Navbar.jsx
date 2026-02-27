@@ -25,7 +25,7 @@ export default function Navbar() {
 
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2 text-violet-600 font-extrabold text-lg tracking-tight no-underline">
-          <span className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-600 to-blue-500 flex items-center justify-center text-white text-sm">
+          <span className="w-8 h-8 rounded-lg  from-violet-600 to-blue-500 flex items-center justify-center text-white text-sm">
             ⚡
           </span>
           SkillSwap
@@ -71,20 +71,21 @@ export default function Navbar() {
 
               {/* Profile avatar pill */}
               <Link
-                to="/profile"
-                className={`flex items-center gap-2 px-2.5 py-1 rounded-full border no-underline transition-colors ${
-                  isActive("/profile")
-                    ? "border-violet-300 bg-violet-50"
-                    : "border-gray-200 bg-white hover:border-gray-300"
-                }`}
-              >
-                <div className="w-7 h-7 rounded-full bg-gradient-to-br from-violet-600 to-blue-500 flex items-center justify-center text-white text-xs font-bold">
-                  {getInitials(user.name)}
-                </div>
-                <span className="text-sm font-semibold text-gray-800">
-                  {user.name?.split(" ")[0]}
-                </span>
-              </Link>
+  to="/profile"
+  className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all duration-200 ${
+    isActive("/profile")
+      ? "border-violet-300 bg-violet-50"
+      : "border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50"
+  }`}
+>
+  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-600 to-blue-500 flex items-center justify-center text-white text-xs font-bold">
+    {getInitials(user?.name)}
+  </div>
+
+  <span className="text-sm font-semibold text-gray-800">
+    {user?.name?.split(" ")[0]}
+  </span>
+</Link>
 
               {/* Logout */}
               <button
@@ -108,7 +109,7 @@ export default function Navbar() {
               </Link>
               <Link
                 to="/register"
-                className="px-4 py-1.5 rounded-lg text-sm font-semibold text-white bg-gradient-to-r from-violet-600 to-blue-500 hover:opacity-90 transition-opacity no-underline"
+                className="px-4 py-1.5 rounded-lg text-sm font-semibold text-white  from-violet-600 to-blue-500 hover:opacity-90 transition-opacity no-underline"
               >
                 Get Started
               </Link>
