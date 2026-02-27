@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { useState } from "react";
-import { createBarter } from "../features/barters/bartersSlice";
+import { createBarter, clearBarterError } from "../features/barters/bartersSlice";
 
 function SkillDetails() {
   const { id } = useParams();
@@ -10,29 +10,40 @@ function SkillDetails() {
 
   const { skills } = useSelector((state) => state.skills);
   const { user } = useSelector((state) => state.auth);
+  const { error } = useSelector((state) => state.barters); // ✅ correct place
 
   const skill = skills.find((s) => s._id === id);
 
   const mySkills = skills.filter(
-  (s) => s.postedBy?._id === user._id
-);
+    (s) => s.postedBy?._id === user._id
+  );
 
   const [selectedSkill, setSelectedSkill] = useState("");
 
   if (!skill) return <div className="p-6">Skill not found</div>;
 
   const handleRequest = async () => {
-    if (!selectedSkill) return alert("Select your skill first");
+    if (!selectedSkill) {
+      alert("Select your skill first");
+      return;
+    }
 
-    await dispatch(
+    const result = await dispatch(
       createBarter({
-        receiverId: skill.postedBy,
+        receiverId:
+          typeof skill.postedBy === "object"
+            ? skill.postedBy._id
+            : skill.postedBy,
         offeredSkill: selectedSkill,
         neededSkill: skill._id,
       })
     );
 
-    navigate("/barters");
+    // If request succeeded → navigate
+    if (!result.error) {
+      dispatch(clearBarterError());
+      navigate("/barters");
+    }
   };
 
   return (
@@ -49,7 +60,10 @@ function SkillDetails() {
           <select
             className="border p-2 w-full mb-3"
             value={selectedSkill}
-            onChange={(e) => setSelectedSkill(e.target.value)}
+            onChange={(e) => {
+              dispatch(clearBarterError());
+              setSelectedSkill(e.target.value);
+            }}
           >
             <option value="">Select your skill</option>
             {mySkills.map((s) => (
@@ -58,6 +72,13 @@ function SkillDetails() {
               </option>
             ))}
           </select>
+
+          {/* ✅ Show banned error */}
+          {error && (
+            <div className="bg-red-100 text-red-700 p-2 mb-3 rounded">
+              {error}
+            </div>
+          )}
 
           <button
             onClick={handleRequest}

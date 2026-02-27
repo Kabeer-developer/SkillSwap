@@ -30,7 +30,7 @@ export const createBarter = createAsyncThunk(
       return await createBarterAPI(data, token);
     } catch (error) {
       return thunkAPI.rejectWithValue(
-        error.response?.data?.message || "Failed to create barter"
+        error.response?.data?.message || "Action not allowed"
       );
     }
   }
@@ -45,7 +45,7 @@ export const updateBarterStatus = createAsyncThunk(
       return await updateBarterStatusAPI(id, status, token);
     } catch (error) {
       return thunkAPI.rejectWithValue(
-        error.response?.data?.message || "Failed to update status"
+        error.response?.data?.message || "Action not allowed"
       );
     }
   }
@@ -60,7 +60,7 @@ export const scheduleSession = createAsyncThunk(
       return await scheduleSessionAPI(id, data, token);
     } catch (error) {
       return thunkAPI.rejectWithValue(
-        error.response?.data?.message || "Failed to schedule session"
+        error.response?.data?.message || "Action not allowed"
       );
     }
   }
@@ -74,7 +74,11 @@ const bartersSlice = createSlice({
     loading: false,
     error: null,
   },
-  reducers: {},
+  reducers: {
+    clearBarterError: (state) => {
+      state.error = null;
+    },
+  },
   extraReducers: (builder) => {
     builder
 
@@ -95,6 +99,10 @@ const bartersSlice = createSlice({
       // CREATE
       .addCase(createBarter.fulfilled, (state, action) => {
         state.barters.push(action.payload);
+        state.error = null;
+      })
+      .addCase(createBarter.rejected, (state, action) => {
+        state.error = action.payload;
       })
 
       // UPDATE STATUS
@@ -105,6 +113,10 @@ const bartersSlice = createSlice({
         if (index !== -1) {
           state.barters[index] = action.payload;
         }
+        state.error = null;
+      })
+      .addCase(updateBarterStatus.rejected, (state, action) => {
+        state.error = action.payload;
       })
 
       // SCHEDULE
@@ -115,8 +127,13 @@ const bartersSlice = createSlice({
         if (index !== -1) {
           state.barters[index] = action.payload;
         }
+        state.error = null;
+      })
+      .addCase(scheduleSession.rejected, (state, action) => {
+        state.error = action.payload;
       });
   },
 });
 
+export const { clearBarterError } = bartersSlice.actions;
 export default bartersSlice.reducer;
